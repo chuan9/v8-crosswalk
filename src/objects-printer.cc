@@ -242,6 +242,7 @@ SIMD128_INT_PRINT_FUNCTION(Int8x16, 16)
       os << ", " << std::string(get_lane(i) ? "true" : "false"); \
     }                                                            \
   }
+SIMD128_BOOL_PRINT_FUNCTION(Bool64x2, 2)
 SIMD128_BOOL_PRINT_FUNCTION(Bool32x4, 4)
 SIMD128_BOOL_PRINT_FUNCTION(Bool16x8, 8)
 SIMD128_BOOL_PRINT_FUNCTION(Bool8x16, 16)

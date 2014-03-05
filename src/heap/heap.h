@@ -301,6 +301,16 @@ namespace internal {
   V(minus_zero_string, "-0")                                   \
   V(Array_string, "Array")                                     \
   V(Error_string, "Error")                                     \
+  V(signMask, "signMask")                                      \
+  V(x, "x")                                                    \
+  V(y, "y")                                                    \
+  V(z, "z")                                                    \
+  V(w, "w")                                                    \
+  V(flagX, "flagX")                                            \
+  V(flagY, "flagY")                                            \
+  V(flagZ, "flagZ")                                            \
+  V(flagW, "flagW")                                            \
+  V(simd, "SIMD")                                              \
   V(RegExp_string, "RegExp")
 
 #define PRIVATE_SYMBOL_LIST(V)      \

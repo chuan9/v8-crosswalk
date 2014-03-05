@@ -13,9 +13,10 @@ namespace v8 {
 namespace internal {
 
 // Header of runtime functions.
-#define F(name, number_of_args, result_size)                    \
-  Object* Runtime_##name(int args_length, Object** args_object, \
-                         Isolate* isolate);
+#define F(name, number_of_args, result_size)                      \
+    Object* Runtime_##name(int args_length, Object** args_object, \
+                           Isolate* isolate);
+
 FOR_EACH_INTRINSIC_RETURN_OBJECT(F)
 #undef F
 

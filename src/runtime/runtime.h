@@ -564,6 +564,9 @@ namespace internal {
 
 
 #define FOR_EACH_INTRINSIC_SIMD(F)             \
+  F(AllocateFloat32x4, 0, 1)                   \
+  F(AllocateFloat64x2, 0, 1)                   \
+  F(AllocateInt32x4, 0, 1)                     \
   F(IsSimdValue, 1, 1)                         \
   F(SimdToObject, 1, 1)                        \
   F(SimdEquals, 2, 1)                          \

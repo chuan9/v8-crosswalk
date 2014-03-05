@@ -130,6 +130,32 @@ inline bool CanCast(float a) {
 //-------------------------------------------------------------------
 
 // SIMD helper functions.
+RUNTIME_FUNCTION(Runtime_AllocateFloat32x4) {
+  HandleScope scope(isolate);
+  DCHECK(args.length() == 0);
+
+  float32x4_value_t zero = {{0, 0, 0, 0}};
+  return *isolate->factory()->NewFloat32x4(zero.storage);
+}
+
+
+RUNTIME_FUNCTION(Runtime_AllocateFloat64x2) {
+  HandleScope scope(isolate);
+  DCHECK(args.length() == 0);
+
+  float64x2_value_t zero = {{0, 0}};
+  return *isolate->factory()->NewFloat64x2(zero.storage);
+}
+
+
+RUNTIME_FUNCTION(Runtime_AllocateInt32x4) {
+  HandleScope scope(isolate);
+  DCHECK(args.length() == 0);
+
+  int32x4_value_t zero = {{0, 0, 0, 0}};
+  return *isolate->factory()->NewInt32x4(zero.storage);
+}
+
 
 RUNTIME_FUNCTION(Runtime_IsSimdValue) {
   HandleScope scope(isolate);

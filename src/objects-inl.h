@@ -1533,6 +1533,21 @@ int HeapNumber::get_sign() {
 }
 
 
+int Float32x4::kRuntimeAllocatorId() {
+  return Runtime::kAllocateFloat32x4;
+}
+
+
+int Float64x2::kRuntimeAllocatorId() {
+  return Runtime::kAllocateFloat64x2;
+}
+
+
+int Int32x4::kRuntimeAllocatorId() {
+  return Runtime::kAllocateInt32x4;
+}
+
+
 bool Simd128Value::Equals(Simd128Value* that) {
 #define SIMD128_VALUE(TYPE, Type, type, lane_count, lane_type) \
   if (this->Is##Type()) {                                      \

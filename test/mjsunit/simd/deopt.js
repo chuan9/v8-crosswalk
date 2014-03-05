@@ -26,7 +26,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Flags: --simd-object --allow-natives-syntax
-
+/*
 function testdeopt(a, b) {
   var a4 = SIMD.Float32x4(1.0, -2.0, 3.0, -4.0);
   var b4 = SIMD.Float32x4.abs(a4);
@@ -47,6 +47,7 @@ testdeopt(1, 1);
 testdeopt(1, 1);
 %OptimizeFunctionOnNextCall(testdeopt);
 testdeopt(0, 1);
+<<<<<<< HEAD
 
 function testdeopt2() {
   var a4 = SIMD.Float32x4(1.0, -1.0, 1.0, -1.0);
@@ -76,3 +77,5 @@ testdeopt2();
 testdeopt2();
 %OptimizeFunctionOnNextCall(testdeopt2);
 testdeopt2();
+=======
+*/

@@ -47,8 +47,23 @@ class InstructionOperand {
 
   inline bool IsRegister() const;
   inline bool IsDoubleRegister() const;
+  inline bool IsInt32x4Register() const;
+  inline bool IsFloat32x4Register() const;
+  inline bool IsFloat64x2Register() const;
   inline bool IsStackSlot() const;
   inline bool IsDoubleStackSlot() const;
+  inline bool IsInt32x4StackSlot() const;
+  inline bool IsFloat32x4StackSlot() const;
+  inline bool IsFloat64x2StackSlot() const;
+
+  bool IsSIMD128Register() const {
+    return IsInt32x4Register() || IsFloat32x4Register() ||
+           IsFloat64x2Register();
+  }
+  bool IsSIMD128StackSlot() const {
+    return IsInt32x4StackSlot() || IsFloat32x4StackSlot() ||
+           IsFloat64x2StackSlot();
+  }
 
   template <typename SubKindOperand>
   static SubKindOperand* New(Zone* zone, const SubKindOperand& op) {
@@ -359,13 +374,21 @@ class AllocatedOperand : public InstructionOperand {
   enum AllocatedKind {
     STACK_SLOT,
     DOUBLE_STACK_SLOT,
+    INT32x4_STACK_SLOT,
+    FLOAT32x4_STACK_SLOT,
+    FLOAT64x2_STACK_SLOT,
     REGISTER,
-    DOUBLE_REGISTER
+    DOUBLE_REGISTER,
+    INT32x4_REGISTER,
+    FLOAT32x4_REGISTER,
+    FLOAT64x2_REGISTER
   };
 
   AllocatedOperand(AllocatedKind kind, MachineType machine_type, int index)
       : InstructionOperand(ALLOCATED) {
-    DCHECK_IMPLIES(kind == REGISTER || kind == DOUBLE_REGISTER, index >= 0);
+    DCHECK_IMPLIES(kind == REGISTER || kind == DOUBLE_REGISTER ||
+                   kind == INT32x4_REGISTER || kind == FLOAT32x4_REGISTER ||
+                   kind == FLOAT64x2_REGISTER, index >= 0);
     DCHECK(IsSupportedMachineType(machine_type));
     value_ |= AllocatedKindField::encode(kind);
     value_ |= MachineTypeField::encode(machine_type);
@@ -395,6 +418,9 @@ class AllocatedOperand : public InstructionOperand {
       case kRepWord64:
       case kRepFloat32:
       case kRepFloat64:
+      case kRepInt32x4:
+      case kRepFloat32x4:
+      case kRepFloat64x2:
       case kRepTagged:
         return true;
       default:
@@ -405,8 +431,8 @@ class AllocatedOperand : public InstructionOperand {
   INSTRUCTION_OPERAND_CASTS(AllocatedOperand, ALLOCATED);
 
   STATIC_ASSERT(KindField::kSize == 3);
-  class AllocatedKindField : public BitField64<AllocatedKind, 3, 2> {};
-  class MachineTypeField : public BitField64<MachineType, 5, 16> {};
+  class AllocatedKindField : public BitField64<AllocatedKind, 3, 4> {};
+  class MachineTypeField : public BitField64<MachineType, 7, 16> {};
   class IndexField : public BitField64<int32_t, 35, 29> {};
 };
 
@@ -414,11 +440,17 @@ class AllocatedOperand : public InstructionOperand {
 #undef INSTRUCTION_OPERAND_CASTS
 
 
-#define ALLOCATED_OPERAND_LIST(V)       \
-  V(StackSlot, STACK_SLOT)              \
-  V(DoubleStackSlot, DOUBLE_STACK_SLOT) \
-  V(Register, REGISTER)                 \
-  V(DoubleRegister, DOUBLE_REGISTER)
+#define ALLOCATED_OPERAND_LIST(V)               \
+  V(StackSlot, STACK_SLOT)                      \
+  V(DoubleStackSlot, DOUBLE_STACK_SLOT)         \
+  V(Int32x4StackSlot, INT32x4_STACK_SLOT)       \
+  V(Float32x4StackSlot, FLOAT32x4_STACK_SLOT)   \
+  V(Float64x2StackSlot, FLOAT64x2_STACK_SLOT)   \
+  V(Register, REGISTER)                         \
+  V(DoubleRegister, DOUBLE_REGISTER)            \
+  V(Int32x4Register, INT32x4_REGISTER)          \
+  V(Float32x4Register, FLOAT32x4_REGISTER)      \
+  V(Float64x2Register, FLOAT64x2_REGISTER)
 
 
 #define ALLOCATED_OPERAND_IS(SubKind, kOperandKind)          \
@@ -1072,6 +1104,28 @@ class InstructionSequence final : public ZoneObject {
         return false;
     }
   }
+  bool IsFloat32x4(int virtual_register) const {
+    if (GetRepresentation(virtual_register) == kRepFloat32x4) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  bool IsInt32x4(int virtual_register) const {
+    if (GetRepresentation(virtual_register) == kRepInt32x4) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  bool IsFloat64x2(int virtual_register) const {
+    if (GetRepresentation(virtual_register) == kRepFloat64x2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   Instruction* GetBlockStart(RpoNumber rpo) const;
 

@@ -34,8 +34,8 @@ int GetRegisterCount(const RegisterConfiguration* cfg, RegisterKind kind) {
 
 const ZoneVector<LiveRange*>& GetFixedRegisters(
     const RegisterAllocationData* data, RegisterKind kind) {
-  return kind == DOUBLE_REGISTERS ? data->fixed_double_live_ranges()
-                                  : data->fixed_live_ranges();
+  return kind == GENERAL_REGISTERS ? data->fixed_live_ranges()
+                                  : data->fixed_double_live_ranges();
 }
 
 
@@ -104,6 +104,10 @@ int GetByteWidth(MachineType machine_type) {
     case kRepWord64:
     case kRepFloat64:
       return 8;
+    case kRepFloat32x4:
+    case kRepInt32x4:
+    case kRepFloat64x2:
+      return 16;
     default:
       UNREACHABLE();
       return 0;
@@ -187,9 +191,15 @@ UsePositionHintType UsePosition::HintTypeForOperand(
       switch (AllocatedOperand::cast(op).allocated_kind()) {
         case AllocatedOperand::REGISTER:
         case AllocatedOperand::DOUBLE_REGISTER:
+        case AllocatedOperand::INT32x4_REGISTER:
+        case AllocatedOperand::FLOAT32x4_REGISTER:
+        case AllocatedOperand::FLOAT64x2_REGISTER:
           return UsePositionHintType::kOperand;
         case AllocatedOperand::STACK_SLOT:
         case AllocatedOperand::DOUBLE_STACK_SLOT:
+        case AllocatedOperand::INT32x4_STACK_SLOT:
+        case AllocatedOperand::FLOAT32x4_STACK_SLOT:
+        case AllocatedOperand::FLOAT64x2_STACK_SLOT:
           return UsePositionHintType::kNone;
       }
     case InstructionOperand::INVALID:
@@ -312,6 +322,12 @@ RegisterKind LiveRange::kind() const {
     case kRepFloat32:
     case kRepFloat64:
       return DOUBLE_REGISTERS;
+    case kRepInt32x4:
+      return INT32x4_REGISTERS;
+    case kRepFloat32x4:
+      return FLOAT32x4_REGISTERS;
+    case kRepFloat64x2:
+      return FLOAT64x2_REGISTERS;
     default:
       break;
   }
@@ -441,6 +457,14 @@ InstructionOperand LiveRange::GetAssignedOperand() const {
         return RegisterOperand(machine_type(), assigned_register());
       case DOUBLE_REGISTERS:
         return DoubleRegisterOperand(machine_type(), assigned_register());
+      case FLOAT32x4_REGISTERS:
+        return Float32x4RegisterOperand(machine_type(), assigned_register());
+      case INT32x4_REGISTERS:
+        return Int32x4RegisterOperand(machine_type(), assigned_register());
+      case FLOAT64x2_REGISTERS:
+        return Float64x2RegisterOperand(machine_type(), assigned_register());
+      default:
+        UNREACHABLE();
     }
   }
   DCHECK(spilled());
@@ -462,6 +486,12 @@ AllocatedOperand LiveRange::GetSpillRangeOperand() const {
       return StackSlotOperand(machine_type(), index);
     case DOUBLE_REGISTERS:
       return DoubleStackSlotOperand(machine_type(), index);
+    case FLOAT32x4_REGISTERS:
+      return Float32x4RegisterOperand(machine_type(), index);
+    case INT32x4_REGISTERS:
+      return Int32x4RegisterOperand(machine_type(), index);
+    case FLOAT64x2_REGISTERS:
+      return Float64x2RegisterOperand(machine_type(), index);
   }
   UNREACHABLE();
   return StackSlotOperand(kMachNone, 0);
@@ -693,7 +723,8 @@ void LiveRange::ConvertUsesToOperand(const InstructionOperand& op,
         InstructionOperand::ReplaceWith(pos->operand(), &spill_op);
         break;
       case UsePositionType::kRequiresRegister:
-        DCHECK(op.IsRegister() || op.IsDoubleRegister());
+        DCHECK(op.IsRegister() || op.IsDoubleRegister() ||
+               op.IsSIMD128Register());
       // Fall through.
       case UsePositionType::kAny:
         InstructionOperand::ReplaceWith(pos->operand(), &op);
@@ -1062,7 +1093,8 @@ SpillRange* RegisterAllocationData::AssignSpillRangeToLiveRange(
 
 
 void RegisterAllocationData::MarkAllocated(RegisterKind kind, int index) {
-  if (kind == DOUBLE_REGISTERS) {
+  if (kind == DOUBLE_REGISTERS || kind == INT32x4_REGISTERS ||
+      kind == FLOAT32x4_REGISTERS || kind == FLOAT64x2_REGISTERS) {
     assigned_double_registers_->Add(index);
   } else {
     DCHECK(kind == GENERAL_REGISTERS);
@@ -1879,6 +1911,8 @@ void LinearScanAllocator::AllocateRegisters() {
     if (range == nullptr) continue;
     if (range->kind() == mode()) {
       AddToUnhandledUnsorted(range);
+    } else if (mode() == DOUBLE_REGISTERS && range->kind() > mode()) {
+      AddToUnhandledUnsorted(range);
     }
   }
   SortUnhandled();
@@ -1887,7 +1921,7 @@ void LinearScanAllocator::AllocateRegisters() {
   auto& fixed_ranges = GetFixedRegisters(data(), mode());
   for (auto current : fixed_ranges) {
     if (current != nullptr) {
-      DCHECK_EQ(mode(), current->kind());
+      DCHECK_LE(mode(), current->kind());
       AddToInactive(current);
     }
   }

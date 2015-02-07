@@ -11,6 +11,7 @@ namespace v8 {
 namespace internal {
 namespace compiler {
 
+
 // Collects the spill slot requirements and the allocated general and double
 // registers for a compiled function. Frames are usually populated by the
 // register allocator and are used by Linkage to generate code for the prologue
@@ -56,13 +57,18 @@ class Frame : public ZoneObject {
   int GetOsrStackSlotCount() { return osr_stack_slot_count_; }
 
   int AllocateSpillSlot(int width) {
-    DCHECK(width == 4 || width == 8);
+    // If 32-bit, skip one if the new slot is a double.
+     DCHECK(width == 4 || width == 8 || width == 16);
     // Skip one slot if necessary.
-    if (width > kPointerSize) {
+    if ((width > kPointerSize) && (width != 16)) {
       DCHECK(width == kPointerSize * 2);
       spill_slot_count_++;
       spill_slot_count_ |= 1;
+    } else if (width ==16) {
+      int n = 2 * kDoubleSize / kPointerSize - 1;
+      spill_slot_count_ += n;
     }
+
     return spill_slot_count_++;
   }
 

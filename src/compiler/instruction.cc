@@ -62,6 +62,17 @@ std::ostream& operator<<(std::ostream& os,
         case AllocatedOperand::DOUBLE_STACK_SLOT:
           os << "[double_stack:" << DoubleStackSlotOperand::cast(op).index();
           break;
+        case AllocatedOperand::INT32x4_STACK_SLOT:
+          os << "[int32x4_stack:" << Int32x4StackSlotOperand::cast(op).index();
+          break;
+        case AllocatedOperand::FLOAT32x4_STACK_SLOT:
+          os << "[float32x4_stack:" <<
+                Float32x4StackSlotOperand::cast(op).index();
+          break;
+        case AllocatedOperand::FLOAT64x2_STACK_SLOT:
+          os << "[float64x2_stack:" <<
+                Float64x2StackSlotOperand::cast(op).index();
+          break;
         case AllocatedOperand::REGISTER:
           os << "["
              << conf->general_register_name(RegisterOperand::cast(op).index())
@@ -72,7 +83,22 @@ std::ostream& operator<<(std::ostream& os,
              << conf->double_register_name(
                     DoubleRegisterOperand::cast(op).index()) << "|R";
           break;
-      }
+        case AllocatedOperand::FLOAT32x4_REGISTER:
+          os << "["
+             << conf->double_register_name(
+                    Float32x4RegisterOperand::cast(op).index()) << "|R";
+          break;
+        case AllocatedOperand::INT32x4_REGISTER:
+          os << "["
+             << conf->double_register_name(
+                    Int32x4RegisterOperand::cast(op).index()) << "|R";
+          break;
+        case AllocatedOperand::FLOAT64x2_REGISTER:
+          os << "["
+             << conf->double_register_name(
+                    Float64x2RegisterOperand::cast(op).index()) << "|R";
+          break;
+     }
       switch (allocated.machine_type()) {
         case kRepWord32:
           os << "|w32";
@@ -85,6 +111,15 @@ std::ostream& operator<<(std::ostream& os,
           break;
         case kRepFloat64:
           os << "|f64";
+          break;
+        case kRepInt32x4:
+          os << "|i32x4";
+          break;
+        case kRepFloat32x4:
+          os << "|f32x4";
+          break;
+       case kRepFloat64x2:
+          os << "|f64x2";
           break;
         case kRepTagged:
           os << "|t";
@@ -584,6 +619,9 @@ static MachineType FilterRepresentation(MachineType rep) {
     case kRepWord64:
     case kRepFloat32:
     case kRepFloat64:
+    case kRepInt32x4:
+    case kRepFloat32x4:
+    case kRepFloat64x2:
     case kRepTagged:
       return rep;
     default:

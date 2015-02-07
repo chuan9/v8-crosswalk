@@ -782,8 +782,10 @@ namespace internal {
   F(Int32x4GetFlagY, 1, 1)                     \
   F(Int32x4GetFlagZ, 1, 1)                     \
   F(Int32x4GetFlagW, 1, 1)                     \
-  F(Int32x4GetSignMask, 1, 1)
-
+  F(Int32x4GetSignMask, 1, 1)                  \
+  F(ThrowNotFloat32x4Error, 0, 1)              \
+  F(ThrowNotFloat64x2Error, 0, 1)              \
+  F(ThrowNotInt32x4Error, 0, 1)
 
 #define FOR_EACH_INTRINSIC_URI(F) \
   F(URIEscape, 1, 1)              \

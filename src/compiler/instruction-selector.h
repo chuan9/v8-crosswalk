@@ -158,6 +158,11 @@ class InstructionSelector final {
   void MarkAsFloat32(Node* node) { MarkAsRepresentation(kRepFloat32, node); }
   void MarkAsFloat64(Node* node) { MarkAsRepresentation(kRepFloat64, node); }
   void MarkAsReference(Node* node) { MarkAsRepresentation(kRepTagged, node); }
+  void MarkAsInt32x4(Node* node) { MarkAsRepresentation(kRepInt32x4, node); }
+  void MarkAsFloat32x4(Node* node) {
+    MarkAsRepresentation(kRepFloat32x4, node); }
+  void MarkAsFloat64x2(Node* node) {
+    MarkAsRepresentation(kRepFloat64x2, node); }
 
   // Inform the register allocation of the representation of the unallocated
   // operand {op}.

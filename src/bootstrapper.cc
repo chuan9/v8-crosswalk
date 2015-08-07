@@ -1459,7 +1459,7 @@ void Genesis::InitializeExperimentalGlobal() {
         static_cast<PropertyAttributes>(DONT_ENUM | DONT_DELETE | READ_ONLY);
     // --- f l o a t 3 2 x 4 ---
     Handle<JSFunction> float32x4_fun =
-        InstallFunction(simd_object, "float32x4", FLOAT32x4_TYPE,
+        InstallFunction(simd_object, "Float32x4", FLOAT32x4_TYPE,
                         Float32x4::kSize,
                         isolate()->initial_object_prototype(),
                         Builtins::kIllegal);

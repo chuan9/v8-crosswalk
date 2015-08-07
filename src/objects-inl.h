@@ -1618,7 +1618,7 @@ ACCESSORS(Int32x4, value, Object, kValueOffset)
 
 
 const char* Float32x4::Name() {
-  return "float32x4";
+  return "Float32x4";
 }
 
 

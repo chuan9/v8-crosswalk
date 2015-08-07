@@ -102,7 +102,7 @@ macro IS_MAP(arg)               = (%_ClassOf(arg) === 'Map');
 macro IS_WEAKMAP(arg)           = (%_ClassOf(arg) === 'WeakMap');
 macro IS_WEAKSET(arg)           = (%_ClassOf(arg) === 'WeakSet');
 macro IS_DATE(arg)              = (%_ClassOf(arg) === 'Date');
-macro IsFloat32x4(arg)          = (%_ClassOf(arg) === 'float32x4');
+macro IsFloat32x4(arg)          = (%_ClassOf(arg) === 'Float32x4');
 macro IsFloat64x2(arg)          = (%_ClassOf(arg) === 'float64x2');
 macro IsInt32x4(arg)            = (%_ClassOf(arg) === 'int32x4');
 macro IS_NUMBER_WRAPPER(arg)    = (%_ClassOf(arg) === 'Number');

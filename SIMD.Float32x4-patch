@@ -1,0 +1,100 @@
+diff --git a/src/bootstrapper.cc b/src/bootstrapper.cc
+index 8494555..9de2bd3 100644
+--- a/src/bootstrapper.cc
++++ b/src/bootstrapper.cc
+@@ -1459,7 +1459,7 @@ void Genesis::InitializeExperimentalGlobal() {
+         static_cast<PropertyAttributes>(DONT_ENUM | DONT_DELETE | READ_ONLY);
+     // --- f l o a t 3 2 x 4 ---
+     Handle<JSFunction> float32x4_fun =
+-        InstallFunction(simd_object, "float32x4", FLOAT32x4_TYPE,
++        InstallFunction(simd_object, "Float32x4", FLOAT32x4_TYPE,
+                         Float32x4::kSize,
+                         isolate()->initial_object_prototype(),
+                         Builtins::kIllegal);
+diff --git a/src/heap/heap.h b/src/heap/heap.h
+index 61158ef..e2afd9f 100644
+--- a/src/heap/heap.h
++++ b/src/heap/heap.h
+@@ -302,7 +302,7 @@ namespace internal {
+   V(minus_zero_string, "-0")                                   \
+   V(Array_string, "Array")                                     \
+   V(Error_string, "Error")                                     \
+-  V(float32x4_string, "float32x4")                             \
++  V(float32x4_string, "Float32x4")                             \
+   V(float64x2_string, "float64x2")                             \
+   V(int32x4_string, "int32x4")                                 \
+   V(signMask, "signMask")                                      \
+diff --git a/src/macros.py b/src/macros.py
+index 95d0e83..e04a0a0 100644
+--- a/src/macros.py
++++ b/src/macros.py
+@@ -102,7 +102,7 @@ macro IS_MAP(arg)               = (%_ClassOf(arg) === 'Map');
+ macro IS_WEAKMAP(arg)           = (%_ClassOf(arg) === 'WeakMap');
+ macro IS_WEAKSET(arg)           = (%_ClassOf(arg) === 'WeakSet');
+ macro IS_DATE(arg)              = (%_ClassOf(arg) === 'Date');
+-macro IsFloat32x4(arg)          = (%_ClassOf(arg) === 'float32x4');
++macro IsFloat32x4(arg)          = (%_ClassOf(arg) === 'Float32x4');
+ macro IsFloat64x2(arg)          = (%_ClassOf(arg) === 'float64x2');
+ macro IsInt32x4(arg)            = (%_ClassOf(arg) === 'int32x4');
+ macro IS_NUMBER_WRAPPER(arg)    = (%_ClassOf(arg) === 'Number');
+diff --git a/src/objects-inl.h b/src/objects-inl.h
+index 38ef5bf..6fd5dd6 100644
+--- a/src/objects-inl.h
++++ b/src/objects-inl.h
+@@ -1618,7 +1618,7 @@ ACCESSORS(Int32x4, value, Object, kValueOffset)
+ 
+ 
+ const char* Float32x4::Name() {
+-  return "float32x4";
++  return "Float32x4";
+ }
+ 
+ 
+diff --git a/src/objects.cc b/src/objects.cc
+index 7a51fff..693ee0d 100644
+--- a/src/objects.cc
++++ b/src/objects.cc
+@@ -1916,7 +1916,7 @@ const char* Representation::Mnemonic() const {
+     case kTagged: return "t";
+     case kSmi: return "s";
+     case kDouble: return "d";
+-    case kFloat32x4: return "float32x4";
++    case kFloat32x4: return "Float32x4";
+     case kFloat64x2: return "float64x2";
+     case kInt32x4: return "int32x44";
+     case kInteger32: return "i";
+diff --git a/src/parser.cc b/src/parser.cc
+index cf8c4ca..98802af 100644
+--- a/src/parser.cc
++++ b/src/parser.cc
+@@ -609,7 +609,7 @@ bool ParserTraits::BuildSIMD128LoadStoreExpression(
+             type_literal->raw_value()->AsString()) {
+           const AstRawString* type_literal_raw_string =
+               type_literal->raw_value()->AsString();
+-          if (type_literal_raw_string->IsOneByteEqualTo("float32x4")) {
++          if (type_literal_raw_string->IsOneByteEqualTo("Float32x4")) {
+             Literal* op_literal = prop->key()->AsLiteral();
+             if (op_literal && op_literal->raw_value() &&
+                 op_literal->raw_value()->AsString()) {
+diff --git a/src/simd128.js b/src/simd128.js
+index ae045da..3bad734 100644
+--- a/src/simd128.js
++++ b/src/simd128.js
+@@ -35,7 +35,7 @@ var GlobalArray = global.Array;
+ var GlobalArrayBuffer = global.ArrayBuffer;
+ 
+ var $SIMD = global.SIMD;
+-var $Float32x4 = $SIMD.float32x4;
++var $Float32x4 = $SIMD.Float32x4;
+ var $Float64x2 = $SIMD.float64x2;
+ var $Int32x4 = $SIMD.int32x4;
+ var GlobalObject = global.Object;
+@@ -553,7 +553,7 @@ function SetUpSIMD() {
+   %ToFastProperties($SIMD);
+ 
+   // Set up non-enumerable properties of the SIMD float32x4 object.
+-  $installFunctions($SIMD.float32x4, DONT_ENUM, [
++  $installFunctions($SIMD.Float32x4, DONT_ENUM, [
+     // Float32x4 operations
+     "check", Float32x4CheckJS,
+     "load", Float32x4LoadXYZWJS,

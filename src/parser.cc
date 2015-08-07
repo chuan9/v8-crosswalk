@@ -609,7 +609,7 @@ bool ParserTraits::BuildSIMD128LoadStoreExpression(
             type_literal->raw_value()->AsString()) {
           const AstRawString* type_literal_raw_string =
               type_literal->raw_value()->AsString();
-          if (type_literal_raw_string->IsOneByteEqualTo("float32x4")) {
+          if (type_literal_raw_string->IsOneByteEqualTo("Float32x4")) {
             Literal* op_literal = prop->key()->AsLiteral();
             if (op_literal && op_literal->raw_value() &&
                 op_literal->raw_value()->AsString()) {

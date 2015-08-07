@@ -35,7 +35,7 @@ var GlobalArray = global.Array;
 var GlobalArrayBuffer = global.ArrayBuffer;
 
 var $SIMD = global.SIMD;
-var $Float32x4 = $SIMD.float32x4;
+var $Float32x4 = $SIMD.Float32x4;
 var $Float64x2 = $SIMD.float64x2;
 var $Int32x4 = $SIMD.int32x4;
 var GlobalObject = global.Object;
@@ -553,7 +553,7 @@ function SetUpSIMD() {
   %ToFastProperties($SIMD);
 
   // Set up non-enumerable properties of the SIMD float32x4 object.
-  $installFunctions($SIMD.float32x4, DONT_ENUM, [
+  $installFunctions($SIMD.Float32x4, DONT_ENUM, [
     // Float32x4 operations
     "check", Float32x4CheckJS,
     "load", Float32x4LoadXYZWJS,

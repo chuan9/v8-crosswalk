@@ -210,6 +210,14 @@ void Float32x4::Float32x4Print(std::ostream& os) {  // NOLINT
 }
 
 
+void Float64x2::Float64x2Print(std::ostream& os) {  // NOLINT
+  char arr[100];
+  Vector<char> buffer(arr, arraysize(arr));
+  os << std::string(DoubleToCString(get_lane(0), buffer)) << ", "
+     << std::string(DoubleToCString(get_lane(1), buffer));
+}
+
+
 #define SIMD128_INT_PRINT_FUNCTION(type, lane_count)                \
   void type::type##Print(std::ostream& os) {                        \
     char arr[100];                                                  \

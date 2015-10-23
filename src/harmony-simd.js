@@ -15,6 +15,7 @@ var GlobalSIMD = global.SIMD;
 
 macro SIMD_FLOAT_TYPES(FUNCTION)
 FUNCTION(Float32x4, float32x4, 4)
+FUNCTION(Float64x2, float64x2, 2)
 endmacro
 
 macro SIMD_INT_TYPES(FUNCTION)
@@ -24,6 +25,7 @@ FUNCTION(Int8x16, int8x16, 16)
 endmacro
 
 macro SIMD_BOOL_TYPES(FUNCTION)
+FUNCTION(Bool64x2, bool64x2, 2)
 FUNCTION(Bool32x4, bool32x4, 4)
 FUNCTION(Bool16x8, bool16x8, 8)
 FUNCTION(Bool8x16, bool8x16, 16)
@@ -227,6 +229,8 @@ SIMD_LOGICAL_TYPES(DECLARE_LOGICAL_FUNCTIONS)
 macro SIMD_FROM_TYPES(FUNCTION)
 FUNCTION(Float32x4, Int32x4)
 FUNCTION(Int32x4, Float32x4)
+FUNCTION(Float64x2, Int32x4)
+FUNCTION(Float64x2, Float32x4)
 endmacro
 
 macro DECLARE_FROM_FUNCTIONS(TO, FROM)
@@ -241,6 +245,8 @@ macro SIMD_FROM_BITS_TYPES(FUNCTION)
 FUNCTION(Float32x4, Int32x4)
 FUNCTION(Float32x4, Int16x8)
 FUNCTION(Float32x4, Int8x16)
+FUNCTION(Float64x2, Int32x4)
+FUNCTION(Float64x2, Float32x4)
 FUNCTION(Int32x4, Float32x4)
 FUNCTION(Int32x4, Int16x8)
 FUNCTION(Int32x4, Int8x16)
@@ -319,6 +325,61 @@ function Float32x4ShuffleJS(a, b, c0, c1, c2, c3) {
 }
 
 
+function Float64x2Constructor(c0, c1) {
+  if (%_IsConstructCall()) throw MakeTypeError(kNotConstructor, "Float64x2");
+  return %CreateFloat64x2(TO_NUMBER_INLINE(c0), TO_NUMBER_INLINE(c1));
+}
+
+
+function Float64x2Splat(s) {
+  return %CreateFloat64x2(s, s);
+}
+
+
+function Float64x2AbsJS(a) {
+  return %Float64x2Abs(a);
+}
+
+
+function Float64x2SqrtJS(a) {
+  return %Float64x2Sqrt(a);
+}
+
+
+function Float64x2RecipApproxJS(a) {
+  return %Float64x2RecipApprox(a);
+}
+
+
+function Float64x2RecipSqrtApproxJS(a) {
+  return %Float64x2RecipSqrtApprox(a);
+}
+
+
+function Float64x2DivJS(a, b) {
+  return %Float64x2Div(a, b);
+}
+
+
+function Float64x2MinNumJS(a, b) {
+  return %Float64x2MinNum(a, b);
+}
+
+
+function Float64x2MaxNumJS(a, b) {
+  return %Float64x2MaxNum(a, b);
+}
+
+
+function Float64x2SwizzleJS(a, c0, c1) {
+  return %Float64x2Swizzle(a, c0, c1);
+}
+
+
+function Float64x2ShuffleJS(a, b, c0, c1) {
+  return %Float64x2Shuffle(a, b, c0, c1);
+}
+
 function Int32x4Constructor(c0, c1, c2, c3) {
   if (%_IsConstructCall()) throw MakeTypeError(kNotConstructor, "Int32x4");
   return %CreateInt32x4(TO_NUMBER_INLINE(c0), TO_NUMBER_INLINE(c1),
@@ -340,6 +401,25 @@ function Int32x4ShuffleJS(a, b, c0, c1, c2, c3) {
   return %Int32x4Shuffle(a, b, c0, c1, c2, c3);
 }
 
+
+function Bool64x2Constructor(c0, c1) {
+  if (%_IsConstructCall()) throw MakeTypeError(kNotConstructor, "Bool64x2");
+  return %CreateBool64x2(c0, c1);
+}
+
+
+function Bool64x2Splat(s) {
+  return %CreateBool64x2(s, s);
+}
+
+function Bool64x2SwizzleJS(a, c0, c1) {
+  return %Bool64x2Swizzle(a, c0, c1);
+}
+
+
+function Bool64x2ShuffleJS(a, b, c0, c1) {
+  return %Bool64x2Shuffle(a, b, c0, c1);
+}
 
 function Bool32x4Constructor(c0, c1, c2, c3) {
   if (%_IsConstructCall()) throw MakeTypeError(kNotConstructor, "Bool32x4");
@@ -519,6 +599,39 @@ utils.InstallFunctions(GlobalFloat32x4, DONT_ENUM, [
   'fromInt8x16Bits', Float32x4FromInt8x16BitsJS,
 ]);
 
+utils.InstallFunctions(GlobalFloat64x2, DONT_ENUM, [
+  'splat', Float64x2Splat,
+  'check', Float64x2CheckJS,
+  'extractLane', Float64x2ExtractLaneJS,
+  'replaceLane', Float64x2ReplaceLaneJS,
+  'neg', Float64x2NegJS,
+  'abs', Float64x2AbsJS,
+  'sqrt', Float64x2SqrtJS,
+  'reciprocalApproximation', Float64x2RecipApproxJS,
+  'reciprocalSqrtApproximation', Float64x2RecipSqrtApproxJS,
+  'add', Float64x2AddJS,
+  'sub', Float64x2SubJS,
+  'mul', Float64x2MulJS,
+  'div', Float64x2DivJS,
+  'min', Float64x2MinJS,
+  'max', Float64x2MaxJS,
+  'minNum', Float64x2MinNumJS,
+  'maxNum', Float64x2MaxNumJS,
+  'lessThan', Float64x2LessThanJS,
+  'lessThanOrEqual', Float64x2LessThanOrEqualJS,
+  'greaterThan', Float64x2GreaterThanJS,
+  'greaterThanOrEqual', Float64x2GreaterThanOrEqualJS,
+  'equal', Float64x2EqualJS,
+  'notEqual', Float64x2NotEqualJS,
+  'select', Float64x2SelectJS,
+  'swizzle', Float64x2SwizzleJS,
+  'shuffle', Float64x2ShuffleJS,
+  'fromInt32x4', Float64x2FromInt32x4JS,
+  'fromInt32x4Bits', Float64x2FromInt32x4BitsJS,
+  'fromFloat32x4', Float64x2FromFloat32x4JS,
+  'fromFloat32x4Bits', Float64x2FromFloat32x4BitsJS,
+]);
+
 utils.InstallFunctions(GlobalInt32x4, DONT_ENUM, [
   'splat', Int32x4Splat,
   'check', Int32x4CheckJS,
@@ -550,6 +663,23 @@ utils.InstallFunctions(GlobalInt32x4, DONT_ENUM, [
   'fromFloat32x4Bits', Int32x4FromFloat32x4BitsJS,
   'fromInt16x8Bits', Int32x4FromInt16x8BitsJS,
   'fromInt8x16Bits', Int32x4FromInt8x16BitsJS,
+]);
+
+utils.InstallFunctions(GlobalBool64x2, DONT_ENUM, [
+  'splat', Bool64x2Splat,
+  'check', Bool64x2CheckJS,
+  'extractLane', Bool64x2ExtractLaneJS,
+  'replaceLane', Bool64x2ReplaceLaneJS,
+  'and', Bool64x2AndJS,
+  'or', Bool64x2OrJS,
+  'xor', Bool64x2XorJS,
+  'not', Bool64x2NotJS,
+  'anyTrue', Bool64x2AnyTrueJS,
+  'allTrue', Bool64x2AllTrueJS,
+  'equal', Bool64x2EqualJS,
+  'notEqual', Bool64x2NotEqualJS,
+  'swizzle', Bool64x2SwizzleJS,
+  'shuffle', Bool64x2ShuffleJS,
 ]);
 
 utils.InstallFunctions(GlobalBool32x4, DONT_ENUM, [

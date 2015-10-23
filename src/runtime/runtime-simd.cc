@@ -32,6 +32,12 @@ float ConvertNumber<float>(double number) {
 
 
 template <>
+double ConvertNumber<double>(double number) {
+  return number;
+}
+
+
+template <>
 int32_t ConvertNumber<int32_t>(double number) {
   return DoubleToInt32(number);
 }
@@ -160,6 +166,8 @@ RUNTIME_FUNCTION(Runtime_SimdSameValue) {
     if (a->map() == b->map()) {
       if (a->IsFloat32x4()) {
         result = Float32x4::cast(*a)->SameValue(Float32x4::cast(b));
+      } else if (a->IsFloat64x2()) {
+        result = Float64x2::cast(*a)->SameValue(Float64x2::cast(b));
       } else {
         result = a->BitwiseEquals(b);
       }
@@ -180,6 +188,8 @@ RUNTIME_FUNCTION(Runtime_SimdSameValueZero) {
     if (a->map() == b->map()) {
       if (a->IsFloat32x4()) {
         result = Float32x4::cast(*a)->SameValueZero(Float32x4::cast(b));
+      } else if (a->IsFloat64x2()) {
+        result = Float64x2::cast(*a)->SameValueZero(Float64x2::cast(b));
       } else {
         result = a->BitwiseEquals(b);
       }
@@ -242,7 +252,9 @@ RUNTIME_FUNCTION(Runtime_SimdSameValueZero) {
 
 #define SIMD_ALL_TYPES(FUNCTION)                            \
   FUNCTION(Float32x4, float, 4, NewNumber, GET_NUMERIC_ARG) \
+  FUNCTION(Float64x2, double, 2, NewNumber, GET_NUMERIC_ARG) \
   FUNCTION(Int32x4, int32_t, 4, NewNumber, GET_NUMERIC_ARG) \
+  FUNCTION(Bool64x2, bool, 2, ToBoolean, GET_BOOLEAN_ARG)   \
   FUNCTION(Bool32x4, bool, 4, ToBoolean, GET_BOOLEAN_ARG)   \
   FUNCTION(Int16x8, int16_t, 8, NewNumber, GET_NUMERIC_ARG) \
   FUNCTION(Bool16x8, bool, 8, ToBoolean, GET_BOOLEAN_ARG)   \
@@ -386,13 +398,19 @@ SIMD_ALL_TYPES(SIMD_SHUFFLE_FUNCTION)
     return *result;                                                 \
   }
 
-SIMD_ABS_FUNCTION(Float32x4, float, 4)
-SIMD_SQRT_FUNCTION(Float32x4, float, 4)
-SIMD_RECIP_APPROX_FUNCTION(Float32x4, float, 4)
-SIMD_RECIP_SQRT_APPROX_FUNCTION(Float32x4, float, 4)
-SIMD_DIV_FUNCTION(Float32x4, float, 4)
-SIMD_MINNUM_FUNCTION(Float32x4, float, 4)
-SIMD_MAXNUM_FUNCTION(Float32x4, float, 4)
+#define SIMD_FLOAT_TYPES(FUNCTION)                 \
+FUNCTION(Float32x4, float, 4)                      \
+FUNCTION(Float64x2, double, 2)
+
+SIMD_FLOAT_TYPES(SIMD_ABS_FUNCTION)
+SIMD_FLOAT_TYPES(SIMD_SQRT_FUNCTION)
+SIMD_FLOAT_TYPES(SIMD_RECIP_APPROX_FUNCTION)
+SIMD_FLOAT_TYPES(SIMD_RECIP_SQRT_APPROX_FUNCTION)
+SIMD_FLOAT_TYPES(SIMD_DIV_FUNCTION)
+SIMD_FLOAT_TYPES(SIMD_MINNUM_FUNCTION)
+SIMD_FLOAT_TYPES(SIMD_MAXNUM_FUNCTION)
+
+#undef SIMD_FLOAT_TYPES
 
 //-------------------------------------------------------------------
 
@@ -470,6 +488,7 @@ SIMD_INT_TYPES(SIMD_ASR_FUNCTION)
 // Bool-only functions.
 
 #define SIMD_BOOL_TYPES(FUNCTION) \
+  FUNCTION(Bool64x2, 2)           \
   FUNCTION(Bool32x4, 4)           \
   FUNCTION(Bool16x8, 8)           \
   FUNCTION(Bool8x16, 16)
@@ -539,6 +558,7 @@ SIMD_SMALL_INT_TYPES(SIMD_SUB_SATURATE_FUNCTION)
 
 #define SIMD_NUMERIC_TYPES(FUNCTION) \
   FUNCTION(Float32x4, float, 4)      \
+  FUNCTION(Float64x2, double, 2)      \
   FUNCTION(Int32x4, int32_t, 4)      \
   FUNCTION(Int16x8, int16_t, 8)      \
   FUNCTION(Int8x16, int8_t, 16)
@@ -601,12 +621,14 @@ SIMD_NUMERIC_TYPES(SIMD_MAX_FUNCTION)
 
 #define SIMD_RELATIONAL_TYPES(FUNCTION) \
   FUNCTION(Float32x4, Bool32x4, 4)      \
+  FUNCTION(Float64x2, Bool64x2, 2)      \
   FUNCTION(Int32x4, Bool32x4, 4)        \
   FUNCTION(Int16x8, Bool16x8, 8)        \
   FUNCTION(Int8x16, Bool8x16, 16)
 
 #define SIMD_EQUALITY_TYPES(FUNCTION) \
   SIMD_RELATIONAL_TYPES(FUNCTION)     \
+  FUNCTION(Bool64x2, Bool64x2, 2)     \
   FUNCTION(Bool32x4, Bool32x4, 4)     \
   FUNCTION(Bool16x8, Bool16x8, 8)     \
   FUNCTION(Bool8x16, Bool8x16, 16)
@@ -669,6 +691,7 @@ SIMD_RELATIONAL_TYPES(SIMD_GREATER_THAN_OR_EQUAL_FUNCTION)
   FUNCTION(Int32x4, int32_t, 4, _INT) \
   FUNCTION(Int16x8, int16_t, 8, _INT) \
   FUNCTION(Int8x16, int8_t, 16, _INT) \
+  FUNCTION(Bool64x2, bool, 2, _BOOL)  \
   FUNCTION(Bool32x4, bool, 4, _BOOL)  \
   FUNCTION(Bool16x8, bool, 8, _BOOL)  \
   FUNCTION(Bool8x16, bool, 16, _BOOL)
@@ -720,6 +743,7 @@ SIMD_LOGICAL_TYPES(SIMD_NOT_FUNCTION)
 
 #define SIMD_SELECT_TYPES(FUNCTION)       \
   FUNCTION(Float32x4, float, Bool32x4, 4) \
+  FUNCTION(Float64x2, double, Bool64x2, 2)\
   FUNCTION(Int32x4, int32_t, Bool32x4, 4) \
   FUNCTION(Int16x8, int16_t, Bool16x8, 8) \
   FUNCTION(Int8x16, int8_t, Bool8x16, 16)
@@ -748,7 +772,9 @@ SIMD_SELECT_TYPES(SIMD_SELECT_FUNCTION)
 
 #define SIMD_FROM_TYPES(FUNCTION)                 \
   FUNCTION(Float32x4, float, 4, Int32x4, int32_t) \
-  FUNCTION(Int32x4, int32_t, 4, Float32x4, float)
+  FUNCTION(Int32x4, int32_t, 4, Float32x4, float) \
+  FUNCTION(Float64x2, double, 2, Int32x4, int32_t)\
+  FUNCTION(Float64x2, double, 2, Float32x4, float)
 
 #define SIMD_FROM_FUNCTION(type, lane_type, lane_count, from_type, from_ctype) \
   RUNTIME_FUNCTION(Runtime_##type##From##from_type) {                          \
@@ -772,6 +798,8 @@ SIMD_FROM_TYPES(SIMD_FROM_FUNCTION)
   FUNCTION(Float32x4, float, 4, Int32x4)   \
   FUNCTION(Float32x4, float, 4, Int16x8)   \
   FUNCTION(Float32x4, float, 4, Int8x16)   \
+  FUNCTION(Float64x2, double, 2, Int32x4)  \
+  FUNCTION(Float64x2, double, 2, Float32x4)\
   FUNCTION(Int32x4, int32_t, 4, Float32x4) \
   FUNCTION(Int32x4, int32_t, 4, Int16x8)   \
   FUNCTION(Int32x4, int32_t, 4, Int8x16)   \

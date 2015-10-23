@@ -570,7 +570,9 @@ namespace internal {
   F(SimdSameValue, 2, 1)                       \
   F(SimdSameValueZero, 2, 1)                   \
   F(CreateFloat32x4, 4, 1)                     \
+  F(CreateFloat64x2, 2, 1)                     \
   F(CreateInt32x4, 4, 1)                       \
+  F(CreateBool64x2, 2, 1)                      \
   F(CreateBool32x4, 4, 1)                      \
   F(CreateInt16x8, 8, 1)                       \
   F(CreateBool16x8, 8, 1)                      \
@@ -605,6 +607,35 @@ namespace internal {
   F(Float32x4FromInt32x4Bits, 1, 1)            \
   F(Float32x4FromInt16x8Bits, 1, 1)            \
   F(Float32x4FromInt8x16Bits, 1, 1)            \
+  F(Float64x2Check, 1, 1)                      \
+  F(Float64x2ExtractLane, 2, 1)                \
+  F(Float64x2ReplaceLane, 3, 1)                \
+  F(Float64x2Abs, 1, 1)                        \
+  F(Float64x2Neg, 1, 1)                        \
+  F(Float64x2Sqrt, 1, 1)                       \
+  F(Float64x2RecipApprox, 1, 1)                \
+  F(Float64x2RecipSqrtApprox, 1, 1)            \
+  F(Float64x2Add, 2, 1)                        \
+  F(Float64x2Sub, 2, 1)                        \
+  F(Float64x2Mul, 2, 1)                        \
+  F(Float64x2Div, 2, 1)                        \
+  F(Float64x2Min, 2, 1)                        \
+  F(Float64x2Max, 2, 1)                        \
+  F(Float64x2MinNum, 2, 1)                     \
+  F(Float64x2MaxNum, 2, 1)                     \
+  F(Float64x2LessThan, 2, 1)                   \
+  F(Float64x2LessThanOrEqual, 2, 1)            \
+  F(Float64x2GreaterThan, 2, 1)                \
+  F(Float64x2GreaterThanOrEqual, 2, 1)         \
+  F(Float64x2Equal, 2, 1)                      \
+  F(Float64x2NotEqual, 2, 1)                   \
+  F(Float64x2Select, 3, 1)                     \
+  F(Float64x2Swizzle, 3, 1)                    \
+  F(Float64x2Shuffle, 4, 1)                    \
+  F(Float64x2FromInt32x4, 1, 1)                \
+  F(Float64x2FromInt32x4Bits, 1, 1)            \
+  F(Float64x2FromFloat32x4, 1, 1)              \
+  F(Float64x2FromFloat32x4Bits, 1, 1)          \
   F(Int32x4Check, 1, 1)                        \
   F(Int32x4ExtractLane, 2, 1)                  \
   F(Int32x4ReplaceLane, 3, 1)                  \
@@ -634,6 +665,19 @@ namespace internal {
   F(Int32x4FromFloat32x4Bits, 1, 1)            \
   F(Int32x4FromInt16x8Bits, 1, 1)              \
   F(Int32x4FromInt8x16Bits, 1, 1)              \
+  F(Bool64x2Check, 1, 1)                       \
+  F(Bool64x2ExtractLane, 2, 1)                 \
+  F(Bool64x2ReplaceLane, 3, 1)                 \
+  F(Bool64x2And, 2, 1)                         \
+  F(Bool64x2Or, 2, 1)                          \
+  F(Bool64x2Xor, 2, 1)                         \
+  F(Bool64x2Not, 1, 1)                         \
+  F(Bool64x2AnyTrue, 1, 1)                     \
+  F(Bool64x2AllTrue, 1, 1)                     \
+  F(Bool64x2Equal, 2, 1)                       \
+  F(Bool64x2NotEqual, 2, 1)                    \
+  F(Bool64x2Swizzle, 3, 1)                     \
+  F(Bool64x2Shuffle, 4, 1)                     \
   F(Bool32x4Check, 1, 1)                       \
   F(Bool32x4ExtractLane, 2, 1)                 \
   F(Bool32x4ReplaceLane, 3, 1)                 \

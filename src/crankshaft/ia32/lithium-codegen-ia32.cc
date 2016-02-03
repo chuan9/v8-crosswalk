@@ -6500,11 +6500,11 @@ void LCodeGen::DoTernarySIMDOperation(LTernarySIMDOperation* instr) {
       return;
     }
     case kInt32x4Select: {
-      DCHECK(instr->hydrogen()->first()->representation().IsInt32x4());
+      DCHECK(instr->hydrogen()->first()->representation().IsBool32x4());
       DCHECK(instr->hydrogen()->second()->representation().IsInt32x4());
       DCHECK(instr->hydrogen()->third()->representation().IsInt32x4());
 
-      XMMRegister mask_reg = ToInt32x4Register(instr->first());
+      XMMRegister mask_reg = ToBool32x4Register(instr->first());
       XMMRegister left_reg = ToInt32x4Register(instr->second());
       XMMRegister right_reg = ToInt32x4Register(instr->third());
       XMMRegister result_reg = ToInt32x4Register(instr->result());

@@ -6542,7 +6542,7 @@ class Script: public Struct {
 #define SIMD_TERNARY_OPERATIONS(V)                                           \
   V(SIMD.Float32x4, select, Float32x4Select, Float32x4, Int32x4, Float32x4,  \
     Float32x4)                                                               \
-  V(SIMD.Int32x4, select, Int32x4Select, Int32x4, Int32x4, Int32x4, Int32x4) \
+  V(SIMD.Int32x4, select, Int32x4Select, Int32x4, Bool32x4, Int32x4, Int32x4) \
   V(SIMD.Float32x4, replaceLane, Float32x4ReplaceLane, Float32x4, Float32x4, \
     Integer32, Double)                                                       \
   V(SIMD.Int32x4, replaceLane, Int32x4ReplaceLane, Int32x4, Int32x4,         \

@@ -6548,14 +6548,13 @@ class Script: public Struct {
   V(SIMD.Int32x4, replaceLane, Int32x4ReplaceLane, Int32x4, Int32x4,         \
     Integer32, Integer32)
 
-#define SIMD_QUARTERNARY_OPERATIONS(V)                                        \
-  V(SIMD, Float32x4, Float32x4Constructor, Float32x4, Double, Double, Double, \
-    Double)                                                                   \
-  V(SIMD, Int32x4, Int32x4Constructor, Int32x4, Integer32, Integer32,         \
-    Integer32, Integer32)                                                     \
-  V(SIMD, Bool32x4, Bool32x4Constructor, Bool32x4, Integer32, Integer32,      \
-    Integer32, Integer32)
-
+#define SIMD_QUARTERNARY_OPERATIONS(V)                                         \
+  V(SIMD, Float32x4, Float32x4Constructor, Float32x4, Double, Double, Double,  \
+    Double)                                                                    \
+  V(SIMD, Int32x4, Int32x4Constructor, Int32x4, Integer32, Integer32,          \
+    Integer32, Integer32)                                                      \
+  V(SIMD, Bool32x4, Bool32x4Constructor, Bool32x4, Tagged, Tagged,             \
+    Tagged, Tagged)
 
 #define SIMD_QUINARY_OPERATIONS(V)                                      \
   V(SIMD.Float32x4, swizzle, Float32x4Swizzle, Float32x4, Float32x4,    \

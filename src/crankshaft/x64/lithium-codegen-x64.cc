@@ -3852,6 +3852,21 @@ void LCodeGen::DoUnarySIMDOperation(LUnarySIMDOperation* instr) {
       __ bind(&done);
       return;
     }
+    case kBool32x4AllTrue: {
+      DCHECK(instr->hydrogen()->value()->representation().IsBool32x4());
+      XMMRegister input_reg = ToBool32x4Register(instr->value());
+      Register result = ToRegister(instr->result());
+      __ movmskps(result, input_reg);
+      Label true_value, done;
+      __ xorl(result, Immediate(-1));
+      __ j(zero, &true_value, Label::kNear);
+      __ xorl(result, result);
+      __ jmp(&done, Label::kNear);
+      __ bind(&true_value);
+      __ movl(result, Immediate(-1));
+      __ bind(&done);
+      return;
+    }
     case kInt32x4GetX:
     case kInt32x4GetY:
     case kInt32x4GetZ:
@@ -4138,7 +4153,7 @@ void LCodeGen::DoBinarySIMDOperation(LBinarySIMDOperation* instr) {
       DCHECK(instr->hydrogen()->right()->representation().IsFloat32x4());
       XMMRegister left_reg = ToFloat32x4Register(instr->left());
       XMMRegister right_reg = ToFloat32x4Register(instr->right());
-      XMMRegister result_reg = ToInt32x4Register(instr->result());
+      XMMRegister result_reg = ToBool32x4Register(instr->result());
       switch (instr->op()) {
         case kFloat32x4LessThan:
           if (result_reg.is(left_reg)) {
@@ -4283,11 +4298,11 @@ void LCodeGen::DoTernarySIMDOperation(LTernarySIMDOperation* instr) {
   uint8_t imm8 = 0;
   switch (instr->op()) {
     case kFloat32x4Select: {
-      DCHECK(instr->hydrogen()->first()->representation().IsInt32x4());
+      DCHECK(instr->hydrogen()->first()->representation().IsBool32x4());
       DCHECK(instr->hydrogen()->second()->representation().IsFloat32x4());
       DCHECK(instr->hydrogen()->third()->representation().IsFloat32x4());
 
-      XMMRegister mask_reg = ToInt32x4Register(instr->first());
+      XMMRegister mask_reg = ToBool32x4Register(instr->first());
       XMMRegister left_reg = ToFloat32x4Register(instr->second());
       XMMRegister right_reg = ToFloat32x4Register(instr->third());
       XMMRegister result_reg = ToFloat32x4Register(instr->result());
@@ -4512,7 +4527,7 @@ void LCodeGen::DoQuarternarySIMDOperation(LQuarternarySIMDOperation* instr) {
       Register w_reg = ToRegister(instr->w());
       XMMRegister result_reg = ToBool32x4Register(instr->result());
 
-      Immediate neg(-1);
+      Immediate neg(-1);;
       Label done_x, done_y, done_z, done_w;
 
       __ xorps(result_reg, result_reg);
@@ -4520,25 +4535,25 @@ void LCodeGen::DoQuarternarySIMDOperation(LQuarternarySIMDOperation* instr) {
 
       __ CompareRoot(x_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_x, Label::kNear);
-      __ movl(Operand(rsp, 0 * kBool32Size), neg);
+      __ movb(Operand(rsp, 0 * kBool32Size), neg);
       __ jmp(&done_x, Label::kNear);
       __ bind(&done_x);
 
       __ CompareRoot(y_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_y, Label::kNear);
-      __ movl(Operand(rsp, 1 * kBool32Size), neg);
+      __ movb(Operand(rsp, 1 * kBool32Size), neg);
       __ jmp(&done_y, Label::kNear);
       __ bind(&done_y);
 
       __ CompareRoot(z_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_z, Label::kNear);
-      __ movl(Operand(rsp, 2 * kBool32Size), neg);
+      __ movb(Operand(rsp, 2 * kBool32Size), neg);
       __ jmp(&done_z, Label::kNear);
       __ bind(&done_z);
 
       __ CompareRoot(w_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_w, Label::kNear);
-      __ movl(Operand(rsp, 3 * kBool32Size), neg);
+      __ movb(Operand(rsp, 3 * kBool32Size), neg);
       __ jmp(&done_w, Label::kNear);
       __ bind(&done_w);
 

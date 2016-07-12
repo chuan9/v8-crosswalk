@@ -3858,12 +3858,12 @@ void LCodeGen::DoUnarySIMDOperation(LUnarySIMDOperation* instr) {
       Register result = ToRegister(instr->result());
       __ movmskps(result, input_reg);
       Label true_value, done;
-      __ xorl(result, Immediate(-1));
+      __ xorl(result, Immediate(0xF));
       __ j(zero, &true_value, Label::kNear);
       __ xorl(result, result);
       __ jmp(&done, Label::kNear);
       __ bind(&true_value);
-      __ movl(result, Immediate(-1));
+      __ movl(result, Immediate(0xFF));
       __ bind(&done);
       return;
     }
@@ -4532,28 +4532,29 @@ void LCodeGen::DoQuarternarySIMDOperation(LQuarternarySIMDOperation* instr) {
 
       __ xorps(result_reg, result_reg);
       __ subq(rsp, Immediate(kInt32x4Size));
+      __ movups(Operand(rsp, kBool32Size), result_reg);
 
       __ CompareRoot(x_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_x, Label::kNear);
-      __ movb(Operand(rsp, 0 * kBool32Size), neg);
+      __ movl(Operand(rsp, 0 * kBool32Size), neg);
       __ jmp(&done_x, Label::kNear);
       __ bind(&done_x);
 
       __ CompareRoot(y_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_y, Label::kNear);
-      __ movb(Operand(rsp, 1 * kBool32Size), neg);
+      __ movl(Operand(rsp, 1 * kBool32Size), neg);
       __ jmp(&done_y, Label::kNear);
       __ bind(&done_y);
 
       __ CompareRoot(z_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_z, Label::kNear);
-      __ movb(Operand(rsp, 2 * kBool32Size), neg);
+      __ movl(Operand(rsp, 2 * kBool32Size), neg);
       __ jmp(&done_z, Label::kNear);
       __ bind(&done_z);
 
       __ CompareRoot(w_reg, Heap::kTrueValueRootIndex);
       __ j(not_equal, &done_w, Label::kNear);
-      __ movb(Operand(rsp, 3 * kBool32Size), neg);
+      __ movl(Operand(rsp, 3 * kBool32Size), neg);
       __ jmp(&done_w, Label::kNear);
       __ bind(&done_w);
 
